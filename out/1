@@ -1,0 +1,91 @@
+wc -l -w -m samples_files/gutenberg/pg2701.txt
+ 22316  215838 1238226
+
+grep -iwc samples_files/gutenberg/pg2701.txt
+1620 1183
+
+grep -n '^an' samples_files/grep_ex1.txt
+8:an
+9:an-organic
+
+grep -v '^an' samples_files/grep_ex1.txt
+apple
+banana
+mango
+fig
+tango
+every
+Any
+
+sort samples_files/numbers.txt
+1
+10
+2
+251
+30
+
+sort -n samples_files/numbers.txt
+1
+2
+10
+30
+251
+
+sort -k3 -nr samples_files/fruit_data.txt
+apple  10  4.5
+apple  25  4.0
+cherry  15  2.3
+banana  20  1.2
+
+tr -cs 'A-Za-z' '\n' < samples_files/gutenberg/pg2701.txt | tr 'A-Z' 'a-z' | sort | uniq -c | sort -rn | head -20
+14727 the
+   6746 of
+   6514 and
+   4805 a
+   4709 to
+   4244 in
+   3100 that
+   2537 it
+   2532 his
+   2127 i
+   1900 he
+   1827 s
+   1822 but
+   1770 with
+   1753 as
+   1748 is
+   1647 was
+   1644 for
+   1544 all
+   1441 this
+
+tr -cs 'A-Za-z' '\n' < samples_files/gutenberg/pg2701.txt | tr 'A-Z' 'a-z' | sort -u | wc -l
+17136
+
+tr -cs 'A-Za-z' '\n' < samples_files/gutenberg/pg2701.txt | tr 'A-Z' 'a-z' | sort | uniq -c | grep '^ *1 ' | wc -l
+7417
+
+comm -23 <(sort samples_files/compare_text1.txt) <(sort samples_files/compare_text2.txt)
+A Garden of Talking Flowers
+Through the Looking Glass
+
+comm -13 <(sort samples_files/compare_text1.txt) <(sort samples_files/compare_text2.txt)
+A Curious Oyster
+A Garden of Singing Flowers
+Through the Looking-Glass
+
+comm -12 <(sort samples_files/compare_text1.txt) <(sort samples_files/compare_text2.txt)
+Alice in Wonderland
+Jabberwocky
+Mad Hatter's Tea Party
+The Cheshire Cat
+The Pool of Tears
+The Red Queen
+The White Rabbit
+
+paste samples_files/paste_file1.txt samples_files/paste_file2.txt
+apple   22
+banana  11
+cherry  53
+orange  8
+
