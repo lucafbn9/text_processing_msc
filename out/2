@@ -1,0 +1,267 @@
+ awk '{
+    s[$1] += $2
+}
+END {
+    for (fruit in s)
+        printf "%-10s %5d\n", fruit, s[fruit]
+}' samples_files/fruit_data.txt
+apple         35
+banana        20
+cherry        15
+
+awk 'NR>1 && /COMPLETED/ {c++} NR>1 && /FAILED/ {f++} END {print "COMPLETED:",c; print "FAILED:",f}' samples_files/trace.txt
+COMPLETED: 40
+FAILED: 2
+
+awk '{
+    split($3, a, " ")
+    count[a[1]]++
+}
+END {
+    for (name in count)
+        print name, count[name]
+}' samples_files/trace.txt
+AMRFINDER 8
+FASTP 8
+SPADES 9
+FASTQC 8
+PROKKA 9
+
+awk '$4 != 0 {print "Failed task:", $3, "Exit code:", $4}' samples_files/trace.txt
+Failed task: FASTQC Exit code: (sample01)
+Failed task: FASTP Exit code: (sample01)
+Failed task: SPADES Exit code: (sample01)
+Failed task: PROKKA Exit code: (sample01)
+Failed task: AMRFINDER Exit code: (sample01)
+Failed task: FASTQC Exit code: (sample02)
+Failed task: FASTP Exit code: (sample02)
+Failed task: SPADES Exit code: (sample02)
+Failed task: PROKKA Exit code: (sample02)
+Failed task: AMRFINDER Exit code: (sample02)
+Failed task: FASTQC Exit code: (sample03)
+Failed task: FASTP Exit code: (sample03)
+Failed task: SPADES Exit code: (sample03)
+Failed task: SPADES Exit code: (sample03)
+Failed task: PROKKA Exit code: (sample03)
+Failed task: AMRFINDER Exit code: (sample03)
+Failed task: FASTQC Exit code: (sample04)
+Failed task: FASTP Exit code: (sample04)
+Failed task: SPADES Exit code: (sample04)
+Failed task: PROKKA Exit code: (sample04)
+Failed task: AMRFINDER Exit code: (sample04)
+Failed task: FASTQC Exit code: (sample05)
+Failed task: FASTP Exit code: (sample05)
+Failed task: SPADES Exit code: (sample05)
+Failed task: PROKKA Exit code: (sample05)
+Failed task: AMRFINDER Exit code: (sample05)
+Failed task: FASTQC Exit code: (sample06)
+Failed task: FASTP Exit code: (sample06)
+Failed task: SPADES Exit code: (sample06)
+Failed task: PROKKA Exit code: (sample06)
+Failed task: PROKKA Exit code: (sample06)
+Failed task: AMRFINDER Exit code: (sample06)
+Failed task: FASTQC Exit code: (sample07)
+Failed task: FASTP Exit code: (sample07)
+Failed task: SPADES Exit code: (sample07)
+Failed task: PROKKA Exit code: (sample07)
+Failed task: AMRFINDER Exit code: (sample07)
+Failed task: FASTQC Exit code: (sample08)
+Failed task: FASTP Exit code: (sample08)
+Failed task: SPADES Exit code: (sample08)
+Failed task: PROKKA Exit code: (sample08)
+Failed task: AMRFINDER Exit code: (sample08)
+
+awk '{
+    if (($7+0) > max) {
+        max = $7+0
+        task = $3
+    }
+}
+END {
+    print "Leghosszabb feladat:", task
+    print "Futási idő:", max "s"
+}' samples_files/trace.txt
+Leghosszabb feladat: FASTQC Futási idő: 2026s
+
+
+awk '
+{
+    if (match($0, /(INFO|DEBUG|WARN|ERROR) /)) {
+        level = substr($0, RSTART, RLENGTH)
+        sub(/ /, "", level)
+        count[level]++
+    }
+}
+END {
+    print "INFO:", count["INFO"]+0
+    print "DEBUG:", count["DEBUG"]+0
+    print "WARN:", count["WARN"]+0
+    print "ERROR:", count["ERROR"]+0
+}' nextflow.log
+INFO: 45
+DEBUG: 41
+WARN: 2
+ERROR: 2
+
+
+awk '
+/Submitted/ {
+    minute = substr($2, 1, 5)
+    count[minute]++
+}
+END {
+    for (minute in count)
+        print minute, count[minute]
+}' samples_files/nextflow.log | sort
+09:14 14
+09:15 16
+09:16 12
+
+ awk -F'\t' '
+NR==1 {
+    for (i=1; i<=NF; i++) {
+        if ($i=="organism_name") org=i
+        if ($i=="genome_size") size=i
+    }
+    next
+}
+{
+    split($org, a, " ")
+    species = a[1] " " a[2]
+
+    count[species]++
+    sum[species] += $size
+Xanthomonas oryzae Genomok száma: 2 Átlagos genomméret: 4.73614e+06
+Bacillus subtilis Genomok száma: 2 Átlagos genomméret: 4190468
+Pseudomonas aeruginosa Genomok száma: 5 Átlagos genomméret: 6.63493e+06
+Enterobacter hormaechei Genomok száma: 2 Átlagos genomméret: 4983230
+Salmonella enterica Genomok száma: 2 Átlagos genomméret: 4.87035e+06
+Escherichia coli Genomok száma: 6 Átlagos genomméret: 5.08065e+06
+Klebsiella pneumoniae Genomok száma: 6 Átlagos genomméret: 5.73866e+06
+
+
+awk -F'\t' '
+NR==1 {
+    for (i=1; i<=NF; i++) {
+        if ($i=="organism_name") org=i
+        if ($i=="genome_size") size=i
+        if ($i=="gc_percentage") gc=i
+    }
+    next
+}
+{
+    sum_gc += $gc
+    count++
+
+    if (($size+0) > max) {
+}' samples_files/bacteria_metadata.tsv 
+Átlagos GC%: 0
+Legnagyobb genom neve: Streptomyces canus
+Legnagyobb genom mérete: 12157638
+
+awk -f samples_files/reformat_dates.awk samples_files/sample_date.txt
+year    month   day
+2022-08-11
+2023-09-02
+2023-10-14
+2023-11-28
+1 sample(s) from 2023
+1 sample(s) from 2022
+1 sample(s) from 2023
+1 sample(s) from 2023
+
+awk '/^[A-Z][a-z][a-z]-[0-9][0-9] / {
+    if (match($0, /(INFO|DEBUG|WARN|ERROR) /)) {
+        level = substr($0, RSTART, RLENGTH)
+        sub(/ /, "", level)
+        count[level]++
+    }
+}
+END {
+    for (level in count)
+        print level, count[level]
+}' samples_files/nextflow.log
+WARN 2
+ERROR 2
+DEBUG 41
+INFO 45
+
+awk '
+/^[A-Z][a-z][a-z]-[0-9][0-9] / {
+    if (match($0, /(DEBUG|INFO|WARN) /)) {
+        level = substr($0, RSTART, RLENGTH)
+        sub(/ /, "", level)
+        count[level]++
+        total++
+    }
+}
+END {
+    print "DEBUG:", count["DEBUG"]+0
+    print "INFO:", count["INFO"]+0
+    print "WARN:", count["WARN"]+0
+}' samples_files/nextflow.log %.2f%%\n", count["DEBUG"] / total * 100
+DEBUG: 41
+INFO: 45
+WARN: 2
+Összesen: 88
+DEBUG aránya: 46.59%
+
+awk '
+/^[A-Z][a-z][a-z]-[0-9][0-9] / {
+    if (match($0, /\[[^]]+\]/)) {
+        thread = substr($0, RSTART+1, RLENGTH-2)
+        count[thread]++
+    }
+}
+END {
+    max = 0
+
+    for (thread in count) {
+        print thread, count[thread]
+
+        if (count[thread] > max) {
+}' samples_files/nextflow.log", maxest
+Task monitor 44
+Task submitter 42
+main 4
+Legaktívabb szál: Task monitor
+Bejegyzések száma: 44
+
+awk '
+/^[A-Z][a-z][a-z]-[0-9][0-9] / {
+    split($2, t, ":")
+    seconds = t[1]*3600 + t[2]*60 + t[3]
+
+    if (count == 0)
+        first = seconds
+
+    last = seconds
+    count++
+}
+END {
+    duration = last - first
+
+}' samples_files/nextflow.logperc\n", duration/60
+Első időbélyeg másodpercben: 33243
+Utolsó időbélyeg másodpercben: 34086.5
+Futási idő: 843.475 másodperc
+Futási idő: 14.06 perc
+
+
+awk '
+{
+    lines[NR] = $0
+}
+ /SIGINT|Killing running tasks/ {
+    pos = NR
+}
+END {
+    print "Megszakítás előtti sor:"
+    print lines[pos-1]
+
+    print "\nMegszakítás pillanata:"
+    print lines[pos]
+
+}' samples_files/nextflow.logi sor:"
+Megszakítás utáni sor:
+Mar-12 09:14:03.025
